@@ -90,25 +90,46 @@ nixPkgs = ["nodejs_20"]
 
 **Effort: ~1 week.** Railway image grows by ~400 MB (Chromium dominates). Cold starts get slower.
 
-### Path C — Two-service architecture (recommended)
+### Path C — Two-service architecture (RECOMMENDED — GitHub Actions runtime)
 
-Keep mat-app Python-pure on Railway. Host the QA pipeline as a separate service:
+Keep mat-app Python-pure on Railway. Run the QA pipeline as a **GitHub Actions workflow** in the `optum-email-pipeline` repo. Zero recurring cost.
 
 ```
-mat-app (Railway / Python)                  email-qa-service (Node + binaries)
+mat-app (Railway / Python)                  GitHub Actions (ephemeral runner)
 ─────────────────────────                   ─────────────────────────────────
-qa.py page  ────POST /run-qa──────►        Express/Fastify endpoint
-            ◄────polls /status────         runs the Node pipeline
-            ◄────receives result──         posts to Jira via REST + token
+qa.py page  ───POST workflow dispatch──►   Spins up Ubuntu runner (~30 sec)
+            (GitHub API + repo PAT)         Installs Node + Chromium + poppler
+            ◄────polls run status──        Executes the email_qa pipeline
+            ◄──downloads artifact──        Uploads QA report as workflow artifact
+                                            Posts comment + transitions Jira via REST
 ```
 
-Deploy targets for the QA service:
+#### Why GitHub Actions is the recommended target
 
-- **GitHub Actions** — best for low-volume (~10-30 QA/day). Triggered by webhook from mat-app. Per-run pricing model. Heavy binaries (Chromium) pre-cached.
-- **Second Railway service** — best for always-on convenience. Costs slightly more idle.
-- **Cloud Run / Fly.io** — best for spiky bursts; container-native; pay-per-request.
+| Property | Why it matters |
+|---|---|
+| **Zero recurring cost** | Within Capillary's existing GitHub plan free tier (~3,000 private-repo minutes/month). At 30 runs/day × 1.5 min each = ~990 min/month, well inside budget. |
+| **No new infrastructure to provision** | No Cloud Run, no second Railway service, no IT approval for new accounts. Uses GitHub Actions inside the repo we already have. |
+| **Doesn't touch mat-app's Railway image** | Souradeep's deployment stays unchanged. No risk of cold-start regression or memory pressure on his existing 5 pages. |
+| **Isolation by design** | Each QA run is a fresh ephemeral runner — no state pollution, no resource contention with mat-app. |
+| **Heavy binaries pre-cached** | GitHub keeps Chromium and Node in its runner image cache; cold start is ~30 sec, not minutes. |
+| **Transparent usage tracking** | Repo settings show exact minute consumption — no surprise bills. |
 
-**Effort: ~1.5 weeks.** Cleanest separation. mat-app's Railway image stays small + fast.
+#### Trade-off: cold start
+
+GHA runners take ~30 sec to provision before the pipeline starts. Total wall-clock per QA: ~75 sec (30 sec cold + 45 sec pipeline) vs ~45 sec on an always-warm service. Acceptable given vision review already dominates the wall-clock.
+
+#### Alternative deploy targets (kept here for reference)
+
+If GHA usage ever exceeds the free tier or a faster cold start becomes critical, these are the fallbacks:
+
+- **Cloud Run / Fly.io** — pay-per-request, free tier covers low usage. ~5 sec cold start. Requires GCP / Fly account setup.
+- **Second Railway service** — always-on, no cold start. Costs ~$5–15/mo idle. Easiest to deploy if you already use Railway.
+- **AWS Lambda (container image)** — pay-per-request, generous free tier. ~1 sec cold start with provisioned concurrency. Most setup complexity.
+
+**Recommended default: GitHub Actions** unless an explicit constraint forces an alternative.
+
+**Effort (Path C with GHA): ~1 week.** Cleanest separation, zero recurring cost, no impact on mat-app's deployment.
 
 ---
 
