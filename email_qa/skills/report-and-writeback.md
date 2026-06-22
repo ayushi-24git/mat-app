@@ -94,7 +94,7 @@ Pixel diff: desktop <X>% · mobile <Y>%
 ✓ No issues found. Cleared to send.
 </if>
 
-📋 Full report: <link to qa/report.html, or note that it's hosted at opmXX_reports/qa_report.html when integrated with mat-app>
+📋 Full report: <link to the QA report — the local qa/report.html path, or the hosted location once available>
 ```
 
 Keep it under ~500 characters of body text. The full detail is in the report.html.
@@ -158,7 +158,8 @@ WRITEBACK_SKIPPED reason=no_jira_ticket
 - The Jira comment is posted ONCE per pipeline run. If the same ticket gets QA'd twice (re-run after a fix), a second comment is added — don't try to edit the previous one
 - Status transition is idempotent at the Jira API level — if the ticket is already in the target status, the API returns success and nothing changes
 - Never transition to `Closed` from this skill — that's a human-approval decision
-- Comments use plain markdown / ADF — no images or large blocks. The full report lives at `qa/report.html` (or `opmXX_reports/qa_report.html` once integrated with mat-app)
+- Comments use plain markdown / ADF — no images or large blocks. The full report lives at `qa/report.html` locally and at the hosted location post-integration
+- **Do NOT reference internal repos, PRs, integration status, or other internal infrastructure in the comment body.** Comments are visible to all ticket viewers including non-engineers; keep them focused strictly on the QA decision, findings, and recommended actions. No project plan references, no phase labels, no GitHub URLs
 
 ## Why composite
 
