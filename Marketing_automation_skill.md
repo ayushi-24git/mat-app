@@ -1366,3 +1366,75 @@ md.affiliation_id AS AffiliationID,
 md.affiliation_description AS AffiliationDescription,
 md.incentive_indicator AS IncentiveIndicator
 ```
+
+
+---
+
+## HTML Creative QA Validation
+
+### Purpose
+
+Validate the developer-built HTML email against the customer-approved PDF and Figma design before send. Catches Outlook Classic rendering issues, padding drift, colour palette deviations, missing alt text, broken links, dynamic-token issues, and per-section visual mismatches.
+
+**This is a parallel concern, not a serial step.** It runs independently of audience-build status. HTML development happens in parallel with audience pulling; QA does not wait on audience approval.
+
+### When it runs
+
+Triggered manually by a marketer from a standalone sidebar page (not numbered). Whenever an HTML candidate is ready — early dev iteration, post-dev handoff, post-fix re-QA — they upload it and run QA.
+
+### Inputs
+
+| Input | Required | Source |
+|---|---|---|
+| HTML file | Yes | Uploaded by the marketer every run |
+| Reference folder | Yes | Picked from a dropdown of subfolders under the base Drive `assets/` directory. Sticky: persists across sessions via `db.py`. |
+| Jira ticket URL | No | Optional. Enables QA-result writeback (comment + status transition). Skipped silently if blank. |
+
+### Pipeline (4 composite skills)
+
+| Stage | Sub-tasks | Wall-clock |
+|---|---|---|
+| **ingest** | Jira fetch (MCP/REST), Drive folder pull (rclone/Drive API), W-code parsing, file classification, campaign-meta synthesis | ~3-10 sec |
+| **pre-flight** | Style audit (palette/font/tokens/size), compat check (Outlook Classic / Gmail / Outlook New — 31 rules), link QA — all parallel | ~0.1 sec |
+| **visual-validation** | PDF → PNG, Playwright render, pixel diff, per-section crops, Claude-vision per-section review (×12 parallel) | ~35-45 sec |
+| **report-and-writeback** | Aggregate findings, render HTML report, post Jira comment, transition status | ~0.5 sec |
+
+Total wall-clock per run: ~40-55 seconds with vision, ~4-15 seconds without.
+
+### Output
+
+Each run produces:
+
+- `opmXX_reports/qa_report.html` — self-contained HTML report (marketer-readable), matching the OPM-67 sample-report convention
+- JSON artifacts under the campaign's working directory (`campaigns/<slug>/qa/*.json`) for downstream consumption
+- Jira comment + status transition if a ticket URL was provided
+
+### Decision matrix
+
+| Aggregate findings | Decision | Jira transition (OPM project) |
+|---|---|---|
+| Any critical | **MUST FIX** | "In Dev" (transition id 2) |
+| Zero critical, ≥1 major or minor | **READY WITH WARNINGS** | "QA Approved for Release" (transition id 6) |
+| Zero findings | **READY TO SEND** | "QA Approved for Release" (transition id 6) |
+
+### Suppressions (codified false positives)
+
+The pipeline suppresses findings matching `/view_in_browser/i`. This token is an ESP-side macro Capillary's ESP fills at send time; rules that flag its presence/absence are noise.
+
+Extend `ALWAYS_SUPPRESS` in `email_qa/scripts/pre-flight.mjs` to add more patterns. Each entry should have a comment explaining *why* it's suppressed.
+
+### Architecture references
+
+Authoritative specs live in `email_qa/skills/`:
+
+- `email-qa.md` — master orchestrator (public entry point)
+- `ingest.md` — assemble campaign folder from HTML + Drive + Jira
+- `pre-flight.md` — composite static analysis
+- `visual-validation.md` — composite visual checks
+- `report-and-writeback.md` — report HTML + Jira writeback
+
+Pipeline code (Node.js) lives in `email_qa/scripts/`. Streamlit integration is not yet implemented; see `email_qa/INTEGRATION.md` for the three runtime-integration paths (A: Python rewrite, B: multi-runtime container, C: separate service — recommended).
+
+### Provenance
+
+Built and maintained in `ayushi-24git/optum-email-pipeline`. Mirrored here for integration into the broader Marketing Automation pipeline.
