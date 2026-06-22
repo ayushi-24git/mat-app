@@ -1,0 +1,20 @@
+{
+  "name": "email-qa-pipeline",
+  "version": "0.1.0",
+  "description": "Email QA pipeline — validates developer HTML against customer-approved PDF and Figma design. Standalone Node.js pipeline; not yet wired into mat-app's Streamlit UI (see INTEGRATION.md).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "qa": "node scripts/visual-validation.mjs && node scripts/pre-flight.mjs && node scripts/report.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0",
+    "pixelmatch": "^6.0.0",
+    "pngjs": "^7.0.0",
+    "juice": "^11.0.0",
+    "sharp": "^0.33.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
