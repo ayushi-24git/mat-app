@@ -955,7 +955,8 @@ PAGES = [
     "2. Audience Builder",
     "3. Approval Gate",
     "4. Monitoring",
-    "5. Post-Campaign ROI"
+    "5. Post-Campaign ROI",
+    "📧 QA Validation",
 ]
 # Admin Panel page — only visible to Admin role
 _ADMIN_PAGE = "⚙ Admin Panel"
@@ -3401,6 +3402,14 @@ ORDER BY cu.group_type;"""
             )
         else:
             st.warning("Please type a question before asking MAT.")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# HTML CREATIVE QA VALIDATION (standalone — independent of Pages 1-5 state)
+# ══════════════════════════════════════════════════════════════════════════════
+elif selected == "📧 QA Validation":
+    # Lazy import so qa.py issues don't affect the rest of the app at startup
+    from qa import render_qa_page
+    render_qa_page()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ADMIN PANEL (visible to Admin role only)
