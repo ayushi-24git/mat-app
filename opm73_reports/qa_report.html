@@ -1,0 +1,109 @@
+<!doctype html>
+<html><head>
+  <meta charset="utf-8">
+  <title>QA Report — 2026-06-19-WF21826321-eaton</title>
+  <style>
+  body.report { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif; max-width: 1100px; margin: 24px auto; padding: 0 24px; color: #222; line-height: 1.5; }
+  h1 { margin: 0 0 8px 0; font-size: 24px; }
+  h2 { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e5e5e6; font-size: 18px; }
+  h4 { margin: 4px 0; font-size: 13px; color: #555; }
+  .decision-banner { display: inline-block; padding: 10px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin: 10px 0 18px 0; }
+  .decision-banner.ready    { background: #d4edda; color: #155724; }
+  .decision-banner.warnings { background: #fff3cd; color: #856404; }
+  .decision-banner.fix      { background: #f8d7da; color: #721c24; }
+  .meta { color: #666; font-size: 13px; }
+  table.findings, table.visual-grid { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  table.findings th, table.findings td { border: 1px solid #e5e5e6; padding: 8px 10px; vertical-align: top; text-align: left; font-size: 13px; }
+  table.findings th { background: #f5f5f5; }
+  .sev { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .sev-critical { background: #f8d7da; color: #721c24; }
+  .sev-major    { background: #fff3cd; color: #856404; }
+  .sev-minor    { background: #e2e3e5; color: #383d41; }
+  table.visual-grid td { vertical-align: top; padding: 6px; width: 33%; }
+  table.visual-grid img { max-width: 100%; height: auto; border: 1px solid #e5e5e6; }
+  .pipeline-issues { background: #fff3cd; padding: 12px 18px; border-left: 4px solid #f0ad4e; margin: 16px 0; }
+</style>
+</head><body class="report">
+  <h1>QA Report — WF21826321 Eaton 2026 Optum Engage Healthy Incentives Campaign - HTML Development</h1>
+  <p class="meta">
+    <strong>Eaton</strong> · 
+    WF21826321 · 
+    Jira OPM-73 · 
+    Generated 2026-06-20 13:07:11
+  </p>
+  <p class="decision-banner warnings">Decision: READY WITH WARNINGS</p>
+  <p>
+    <strong>0</strong> critical · <strong>11</strong> major · <strong>3</strong> minor &nbsp;|&nbsp;
+    Pixel mismatch: desktop 16.28% · mobile 16.92%
+  </p>
+  <!-- Visual comparison images omitted in demo deployment; see standalone repo for full report -->
+  <h2>Findings — Vision review (? section pairs)</h2>
+  <p>No findings.</p>
+
+  <h2>Findings — Style audit</h2>
+  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>missing_alt</td>
+  <td>Image src=&quot;https://cdn.sanity.io/images/c4naai3b/stage/443428b78c89687e2b1d2710a27984e09b71ce72-276x80.png?fit=max&amp;amp;w=250&amp;amp;h=250&quot; has no alt attribute.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>missing_alt</td>
+  <td>Image src=&quot;https://cdn.sanity.io/images/c4naai3b/stage/c8788c4d91ed27afb7f4f035dd9ee6431768e327-1396x346.png&quot; has no alt attribute.</td>
+</tr></tbody></table>
+
+  <h2>Findings — Compat check (31 rules)</h2>
+  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td></td>
+  <td>Word renders sharp corners regardless of `border-radius`. Visible on buttons, panels, badges.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td></td>
+  <td>Word interprets `&lt;p&gt;` padding as part of paragraph margin in unpredictable ways. Use padding on a wrapping &lt;td&gt; instead, or convert to margin on &lt;p&gt;.</td>
+</tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Without `mso-line-height-rule: exactly`, Word may add extra space between lines, especially when mixing different line-heights.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td></td>
+  <td>Word adds default cellpadding/spacing if not zeroed. Spacing creeps in between cells.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td></td>
+  <td>Attribute `role=&quot;pre sentation&quot;` with a literal space is invalid — browsers and screen readers ignore the role. Real bug observed in the Optum reference template; flagged so it doesn't propagate.</td>
+</tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Without `&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;` (or `light dark`), Outlook New may apply automatic dark-mode color inversion in unexpected ways.</td>
+</tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Companion tag to color-scheme. Outlook New uses both to decide dark-mode behavior.</td>
+</tr></tbody></table>
+
+  <h2>Findings — Link QA (8 links analysed)</h2>
+  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>empty_anchor_text</td>
+  <td>Link with href=&quot;https://www.optumengage.com/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>empty_anchor_text</td>
+  <td>Link with href=&quot;https://www.optumengage.com/rewards/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>empty_anchor_text</td>
+  <td>Link with href=&quot;https://www.optumengage.com/rewards/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>empty_anchor_text</td>
+  <td>Link with href=&quot;https://lumen.com/wellbeing &quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>empty_anchor_text</td>
+  <td>Link with href=&quot;https://lumen.com/wellbeing &quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+</tr></tbody></table>
+
+  <p class="meta">Auto-generated from JSON artifacts.</p>
+</body></html>
