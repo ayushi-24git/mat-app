@@ -29,29 +29,79 @@ from pathlib import Path
 W_CODE_REGEX = re.compile(r"WF\d{7,9}")
 QA_REPORTS_DIR = Path(__file__).parent / "opm73_reports"
 
-# Curated OPM-73 demo data (Eaton 2026 Healthy Incentives campaign).
-# Matches the OPM-67 sample pattern used by Pages 1-5 in app.py.
-_OPM73_DEMO = {
-    "campaign":     "WF21826321 Eaton 2026 Optum Engage Healthy Incentives Campaign",
-    "client":       "Eaton",
-    "w_code":       "WF21826321",
-    "decision":     "READY WITH WARNINGS",
-    "counts":       {"critical": 0, "major": 11, "minor": 3},
-    "pixel_diff":   {"desktop": 16.28, "mobile": 16.92},
-    "vision":       {"sections_reviewed": 16, "cost_usd": 0.34},
-    "jira_ticket":  "OPM-73",
-    "drive_folder": "WF21826321 WHS 83.23 B2C Eaton 2026 Optum Engage Healthy Incentives campaign",
-    "wall_clock_sec": 42,
+# Curated demo data per known campaign — keyed by W-code so the page can
+# route a marketer's uploaded HTML to the right sample report. Numbers reflect
+# the precision-tuned pipeline output (distinct issues, context-aware compat
+# rules, link findings grouped by unique URL).
+_DEMO_BY_WCODE = {
+    "WF21826321": {
+        "campaign":     "WF21826321 Eaton 2026 Optum Engage Healthy Incentives Campaign",
+        "client":       "Eaton",
+        "w_code":       "WF21826321",
+        "decision":     "READY WITH WARNINGS",
+        "counts":       {"critical": 0, "major": 9, "minor": 5},        # post noise-reduction
+        "raw_counts":   {"critical": 0, "major": 11, "minor": 5},
+        "pixel_diff":   {"desktop": 16.28, "mobile": 16.92},
+        "vision":       {"sections_reviewed": 12, "cost_usd": 0.18},
+        "jira_ticket":  "OPM-73",
+        "drive_folder": "WF21826321 WHS 83.23 B2C Eaton 2026 Optum Engage Healthy Incentives campaign",
+        "wall_clock_sec": 58,
+        "report_filename": "qa_report.html",
+    },
+    "WF21219509": {
+        "campaign":     "WF21219509 Nationwide 2026 My Health Optum Engage reminders (NewHire)",
+        "client":       "Nationwide",
+        "w_code":       "WF21219509",
+        # Criticals = 5 unresolved Liquid template directives (vision-review).
+        # Remaining minors = 2 genuinely cross-org redirects (Nationwide
+        # → Optum hub, Optum shortener → Apple App Store). Same-brand
+        # redirects (within optum-family or nationwide-family) are now
+        # suppressed.
+        "decision":     "MUST FIX",
+        "counts":       {"critical": 5, "major": 12, "minor": 11},      # post noise-reduction
+        "raw_counts":   {"critical": 5, "major": 12, "minor": 11},
+        "pixel_diff":   {"desktop": 33.51, "mobile": 22.91},
+        "vision":       {"sections_reviewed": 12, "cost_usd": 0.30},
+        "jira_ticket":  None,
+        "drive_folder": "Nationwide 2026 My Health Optum Engage reminders NewHire 040126",
+        "wall_clock_sec": 64,
+        "report_filename": "qa_report_nationwide.html",
+    },
 }
+# Default fallback when we can't identify the campaign from inputs.
+_DEFAULT_DEMO_KEY = "WF21826321"
 
-# Hardcoded campaign folder list for demo mode.
-# In live mode this is populated dynamically from the Drive API.
-_DEMO_FOLDERS = [
-    ("eaton-2026-folder-id",
-     "WF21826321 WHS 83.23 B2C   Eaton 2026 Optum Engage  Healthy Incentives campaign"),
-    # Future: Nationwide WF21219509, Valero WF20317158 — populated when
-    # uploaded into <BASE_DRIVE>/assets/ during Phase B (Week 2).
+# Recent / sample campaigns shown in the "Pick from recent" tab.
+# In demo mode this is a hardcoded list of campaigns we've ingested previously.
+# In live mode (Phase 3+) this comes from db.py — user's actual run history.
+_RECENT_CAMPAIGNS = [
+    {
+        "id":   "eaton-2026",
+        "label": "Eaton 2026 Optum Engage Healthy Incentives",
+        "w_code": "WF21826321",
+        "jira":  "OPM-73",
+        "drive_url": "https://drive.google.com/drive/folders/1jlXfjrg0YQS78nC8CTenA17Cw405eOZR",
+    },
+    {
+        "id":   "nationwide-2026",
+        "label": "Nationwide 2026 My Health Optum Engage reminders (NewHire)",
+        "w_code": "WF21219509",
+        "jira":  None,
+        "drive_url": "https://drive.google.com/drive/folders/14yQFy8AAE7NnWMDSqyQuvCEYVPzWIzsi",
+    },
 ]
+
+DRIVE_URL_RE = re.compile(
+    r"https?://drive\.google\.com/drive/(?:u/\d+/)?folders/([A-Za-z0-9_-]+)",
+    re.IGNORECASE,
+)
+
+def _parse_drive_folder_id(url: str):
+    """Extract the folder ID from a Google Drive folder URL. Returns None if invalid."""
+    if not url:
+        return None
+    m = DRIVE_URL_RE.search(url.strip())
+    return m.group(1) if m else None
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -81,18 +131,35 @@ def _parse_w_code(filename: str, content: str) -> str | None:
     return None
 
 
-def _load_opm73_sample_report() -> str:
-    """Return the curated OPM-73 sample report HTML (or a fallback message)."""
+def _load_sample_report(filename: str) -> str:
+    """Return a curated sample report HTML by filename (or a fallback message)."""
     try:
-        path = QA_REPORTS_DIR / "qa_report.html"
+        path = QA_REPORTS_DIR / filename
         return path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return (
-            "<p style='padding:24px;font-family:sans-serif;color:#a00'>"
-            "Sample report not found at opm73_reports/qa_report.html — "
-            "please verify the file is present in the repo."
-            "</p>"
+            f"<p style='padding:24px;font-family:sans-serif;color:#a00'>"
+            f"Sample report not found at opm73_reports/{filename} — "
+            f"please verify the file is present in the repo."
+            f"</p>"
         )
+
+
+def _pick_demo_for_inputs(w_code_hint, selected_folder_label):
+    """Decide which curated demo dict to use, based on the marketer's inputs.
+
+    Priority:
+      1. W-code parsed from the uploaded HTML (most reliable signal)
+      2. W-code substring in the selected folder label (fallback)
+      3. Default sample (Eaton)
+    """
+    if w_code_hint and w_code_hint in _DEMO_BY_WCODE:
+        return _DEMO_BY_WCODE[w_code_hint], w_code_hint
+    if selected_folder_label:
+        for code in _DEMO_BY_WCODE:
+            if code in selected_folder_label:
+                return _DEMO_BY_WCODE[code], code
+    return _DEMO_BY_WCODE[_DEFAULT_DEMO_KEY], _DEFAULT_DEMO_KEY
 
 
 def _decision_banner(decision: str) -> None:
@@ -206,30 +273,84 @@ def render_qa_page() -> None:
                 "but Jira writeback auto-suggest is disabled."
             )
 
-    # ── INPUT 2: Reference folder ──────────────────────────────────
+    # ── INPUT 2: Reference folder (two modes) ──────────────────────
     st.subheader("2. Select reference folder")
-    folder_choices = [name for _, name in _DEMO_FOLDERS]
-
-    # Default to the W-code match if uploaded HTML has one
-    default_idx = 0
-    if w_code_hint:
-        for i, (_, fname) in enumerate(_DEMO_FOLDERS):
-            if fname.startswith(w_code_hint):
-                default_idx = i
-                break
-
-    selected_idx = st.selectbox(
-        "Campaign folder under <BASE_DRIVE>/assets/",
-        range(len(folder_choices)),
-        index=default_idx,
-        format_func=lambda i: folder_choices[i],
-        help="Source of truth for PDFs, Figma file, and image assets",
-        label_visibility="collapsed",
+    st.caption(
+        "Source of truth for PDFs, Figma file, and image assets. "
+        "Either paste a Drive folder URL or pick a previously-used campaign."
     )
-    selected_folder_id, selected_folder_name = _DEMO_FOLDERS[selected_idx]
+
+    tab_paste, tab_recent = st.tabs(["🔗 Paste Drive URL", "📂 Pick recent campaign"])
+
+    selected_folder_id = None
+    selected_folder_label = None
+
+    # ── Tab A: paste a fresh Drive URL ──
+    with tab_paste:
+        drive_url_input = st.text_input(
+            "Drive folder URL",
+            value="",
+            placeholder="https://drive.google.com/drive/folders/1jlXfjrg0YQS78nC8CTenA17Cw405eOZR",
+            help="Paste the full Drive folder URL. The folder should contain PDFs, links.docx, hero/logo/icon images.",
+            key="drive_url_input",
+        )
+        if drive_url_input.strip():
+            parsed_id = _parse_drive_folder_id(drive_url_input)
+            if parsed_id:
+                st.success(f"✓  Detected folder ID: `{parsed_id}`")
+                selected_folder_id = parsed_id
+                selected_folder_label = drive_url_input.strip()
+            else:
+                st.error(
+                    "⚠️  Not a valid Drive folder URL. Expected format: "
+                    "`https://drive.google.com/drive/folders/<folder-id>`"
+                )
+
+    # ── Tab B: pick from recent campaigns ──
+    with tab_recent:
+        if not _RECENT_CAMPAIGNS:
+            st.info("No recent campaigns yet — run one via the Paste tab to populate this list.")
+        else:
+            # Auto-select the W-code match if uploaded HTML has one
+            default_idx = 0
+            if w_code_hint:
+                for i, c in enumerate(_RECENT_CAMPAIGNS):
+                    if c["w_code"] == w_code_hint:
+                        default_idx = i
+                        break
+
+            picked_idx = st.radio(
+                "Recent campaigns",
+                range(len(_RECENT_CAMPAIGNS)),
+                index=default_idx,
+                format_func=lambda i: (
+                    f"{_RECENT_CAMPAIGNS[i]['w_code']} — {_RECENT_CAMPAIGNS[i]['label']}"
+                    + (f"  ·  {_RECENT_CAMPAIGNS[i]['jira']}" if _RECENT_CAMPAIGNS[i]['jira'] else "")
+                ),
+                label_visibility="collapsed",
+            )
+            picked = _RECENT_CAMPAIGNS[picked_idx]
+            # Only use this tab's selection if the paste tab is empty
+            if not selected_folder_id:
+                selected_folder_id = _parse_drive_folder_id(picked["drive_url"])
+                selected_folder_label = picked["label"]
+            st.caption(
+                f"Folder: `{selected_folder_id}` · "
+                f"[Open in Drive]({picked['drive_url']})"
+            )
+
+    # Belt-and-braces: if NOTHING is selected from either tab in demo mode,
+    # fall back to the first recent campaign so the page is still demoable.
+    if not selected_folder_id and not live and _RECENT_CAMPAIGNS:
+        first = _RECENT_CAMPAIGNS[0]
+        selected_folder_id = _parse_drive_folder_id(first["drive_url"])
+        selected_folder_label = first["label"]
 
     if not live:
-        st.caption("ℹ️  In live mode this dropdown is populated dynamically from Drive.")
+        st.caption(
+            "ℹ️  Recent campaigns are hardcoded in demo mode. In live mode "
+            "they come from your db.py run history."
+        )
 
     # ── INPUT 3: Jira ticket (optional) ────────────────────────────
     st.subheader("3. Jira ticket (optional)")
@@ -251,10 +372,13 @@ def render_qa_page() -> None:
 
     st.divider()
 
+    # ── Pick which curated demo to use (based on W-code or folder choice) ──
+    demo_result, demo_key = _pick_demo_for_inputs(w_code_hint, selected_folder_label)
+
     # ── Run button ─────────────────────────────────────────────────
     run_label = "▶  Run QA"
     if not live and not uploaded_html:
-        run_label = "▶  Run QA (demo with OPM-73 sample)"
+        run_label = f"▶  Run QA  (demo: {demo_result['client']})"
 
     if not st.button(run_label, type="primary", use_container_width=True):
         return
@@ -274,13 +398,15 @@ def render_qa_page() -> None:
         if result is None:
             return
     else:
-        # Demo mode — simulate the pipeline phases
+        # Demo mode — simulate pipeline phases, then load the matching sample
+        st.caption(f"🟡 Demo mode — rendering curated sample for **{demo_result['client']} ({demo_key})**")
         _simulate_pipeline_progress()
-        result = _OPM73_DEMO
+        result = demo_result
 
     # ── Render result ──────────────────────────────────────────────
     st.divider()
     _decision_banner(result["decision"])
+    st.markdown(f"**Campaign:** {result['campaign']}")
 
     counts = result["counts"]
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -290,12 +416,12 @@ def render_qa_page() -> None:
     col4.metric("Desktop diff",  f"{result['pixel_diff']['desktop']}%")
     col5.metric("Mobile diff",   f"{result['pixel_diff']['mobile']}%")
 
-    # Wall-clock + cost line
+    # Wall-clock + folder line (cost intentionally omitted from marketer view)
     sec = result.get("wall_clock_sec", "—")
-    cost = result.get("vision", {}).get("cost_usd")
-    cost_str = f"${cost:.2f}" if cost is not None else "—"
-    st.caption(f"⏱  Wall-clock: {sec} sec   ·   💰 Cost: {cost_str}   ·   "
-               f"📁 {result['drive_folder'][:80]}…")
+    st.caption(
+        f"⏱  Wall-clock: {sec} sec   ·   "
+        f"📁 {result['drive_folder'][:90]}"
+    )
 
     # Jira writeback confirmation
     if result.get("jira_ticket"):
@@ -308,11 +434,24 @@ def render_qa_page() -> None:
 
     # ── Full report ────────────────────────────────────────────────
     st.divider()
-    st.subheader("📄  Full QA Report")
-    st.caption(
-        "Marketer-readable report with all findings (style audit, compat check, "
-        "link QA, vision review). Embedded below; also saved to "
-        "`opm73_reports/qa_report.html`."
-    )
-    report_html = _load_opm73_sample_report()
+    header_col, dl_col = st.columns([3, 1])
+    with header_col:
+        st.subheader("📄  Full QA Report")
+        st.caption("Marketer-readable report with all findings — embedded below.")
+    report_filename = result.get("report_filename", "qa_report.html")
+    report_html = _load_sample_report(report_filename)
+    with dl_col:
+        # Download as a self-contained HTML the marketer can share or archive.
+        download_name = (
+            f"qa-report-{result.get('w_code', 'campaign')}-"
+            f"{result.get('client', 'unknown').lower().replace(' ', '-')}.html"
+        )
+        st.download_button(
+            label="⬇  Download report",
+            data=report_html.encode("utf-8"),
+            file_name=download_name,
+            mime="text/html",
+            use_container_width=True,
+            help="Self-contained HTML report with all findings + embedded CSS",
+        )
     components.html(report_html, height=900, scrolling=True)

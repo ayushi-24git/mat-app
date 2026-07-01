@@ -22,6 +22,10 @@
   table.visual-grid td { vertical-align: top; padding: 6px; width: 33%; }
   table.visual-grid img { max-width: 100%; height: auto; border: 1px solid #e5e5e6; }
   .pipeline-issues { background: #fff3cd; padding: 12px 18px; border-left: 4px solid #f0ad4e; margin: 16px 0; }
+  details.section > summary::-webkit-details-marker { display: none; }
+  details.section > summary { outline: none; user-select: none; }
+  details.section[open] > summary .section-toggle { transform: rotate(90deg); }
+  details.section > summary .section-toggle { display: inline-block; transition: transform 0.15s ease; color: #888; font-size: 13px; }
 </style>
 </head><body class="report">
   <h1>QA Report — WF21826321 Eaton 2026 Optum Engage Healthy Incentives Campaign - HTML Development</h1>
@@ -29,31 +33,73 @@
     <strong>Eaton</strong> · 
     WF21826321 · 
     Jira OPM-73 · 
-    Generated 2026-06-20 13:07:11
+    Generated 2026-06-30 13:52:11
   </p>
   <p class="decision-banner warnings">Decision: READY WITH WARNINGS</p>
   <p>
-    <strong>0</strong> critical · <strong>11</strong> major · <strong>3</strong> minor &nbsp;|&nbsp;
+    <strong>0</strong> critical · <strong>9</strong> major · <strong>5</strong> minor distinct issues
+    <span class="meta">(16 total instances across the HTML — see findings detail)</span>
+    &nbsp;|&nbsp;
     Pixel mismatch: desktop 16.28% · mobile 16.92%
   </p>
-  <!-- Visual comparison images omitted in demo deployment; see standalone repo for full report -->
-  <h2>Findings — Vision review (? section pairs)</h2>
-  <p>No findings.</p>
-
-  <h2>Findings — Style audit</h2>
-  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <p class="meta">Vision review: 12 section pairs · cost $0.18</p>
+  <!-- Visual comparison images omitted -->
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Visual comparison vs PDF <span class="meta" style="font-size:13px;font-weight:400;">(12 sections compared by Claude)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(1 finding)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">AI compares the rendered HTML against the customer-approved PDF, section by section. Catches subtle differences humans miss: copy mismatches, padding drift, wrong image variants, layout issues.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Where</th><th>Category</th><th>Description + suggested fix</th></tr></thead><tbody><tr>
   <td><span class="sev sev-major">major</span></td>
-  <td>missing_alt</td>
-  <td>Image src=&quot;https://cdn.sanity.io/images/c4naai3b/stage/443428b78c89687e2b1d2710a27984e09b71ce72-276x80.png?fit=max&amp;amp;w=250&amp;amp;h=250&quot; has no alt attribute.</td>
-</tr><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>missing_alt</td>
-  <td>Image src=&quot;https://cdn.sanity.io/images/c4naai3b/stage/c8788c4d91ed27afb7f4f035dd9ee6431768e327-1396x346.png&quot; has no alt attribute.</td>
+  <td>mobile · panel_6</td>
+  <td>copy_mismatch</td>
+  <td>Reference code differs between rendered and PDF: rendered shows 'WF16662861 145612-032025 OHC' while PDF reference shows 'WF21826321 359865-042026'. Campaign folder name contains 'WF21826321', matching the PDF value, indicating rendered HTML contains incorrect campaign identifier.<br/><em>Fix:</em> Verify campaign ID variable in rendered template is correctly resolved; expected WF21826321 based on campaign folder and PDF reference.</td>
 </tr></tbody></table>
+    </div>
+  </details>
 
-  <h2>Findings — Compat check (31 rules)</h2>
-  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
-  <td><span class="sev sev-major">major</span></td>
+  
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Style &amp; accessibility audit
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(2 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Static checks: brand palette adherence, font stack, image alt-text (for screen readers + Gmail image-blocking fallback), and HTML byte size (Gmail clips emails over 102 KB).</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr><td><span class="sev sev-major">major</span></td>
+           <td>missing_alt <span class="meta" style="color:#888;">· 2 instances</span></td>
+           <td>Image src=&quot;https://cdn.sanity.io/images/c4naai3b/stage/443428b78c89687e2b1d2710a27984e09b71ce72-276x80.png?fit=max&amp;amp;w=250&amp;amp;h=250&quot; has no alt attribute.
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 2 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">https://cdn.sanity.io/images/c4naai3b/stage/443428b78c89687e2b1d2710a27984e09b71ce72-276x80.png?fit=</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://cdn.sanity.io/images/c4naai3b/stage/c8788c4d91ed27afb7f4f035dd9ee6431768e327-1396x346.png</code></li>
+               </ul>
+             </details>
+           </td></tr></tbody></table>
+    </div>
+  </details>
+
+  
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Email client compatibility <span class="meta" style="font-size:13px;font-weight:400;">(31 rules across Outlook Classic, Gmail web/iOS/Android, Outlook New / 365)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(7 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Static analysis that catches rendering issues marketers can't visually verify — things that look fine in your browser but break inside Outlook's Word HTML engine or Gmail's mobile clipper. Each finding tells the dev exactly what to fix.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-minor">minor</span></td>
   <td></td>
   <td>Word renders sharp corners regardless of `border-radius`. Visible on buttons, panels, badges.</td>
 </tr><tr>
@@ -81,29 +127,84 @@
   <td></td>
   <td>Companion tag to color-scheme. Outlook New uses both to decide dark-mode behavior.</td>
 </tr></tbody></table>
+    </div>
+  </details>
 
-  <h2>Findings — Link QA (8 links analysed)</h2>
-  <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>empty_anchor_text</td>
-  <td>Link with href=&quot;https://www.optumengage.com/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
-</tr><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>empty_anchor_text</td>
-  <td>Link with href=&quot;https://www.optumengage.com/rewards/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
-</tr><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>empty_anchor_text</td>
-  <td>Link with href=&quot;https://www.optumengage.com/rewards/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
-</tr><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>empty_anchor_text</td>
-  <td>Link with href=&quot;https://lumen.com/wellbeing &quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
-</tr><tr>
-  <td><span class="sev sev-major">major</span></td>
-  <td>empty_anchor_text</td>
-  <td>Link with href=&quot;https://lumen.com/wellbeing &quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.</td>
+  
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Link QA <span class="meta" style="font-size:13px;font-weight:400;">(8 links analysed, including live HTTP probe)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(6 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Every clickable link is extracted, validated against your link mapping (from <code>links.docx</code>), and probed live via HTTP HEAD to verify the page resolves. Catches wrong URLs, broken hrefs, empty anchor text, 404s, timeouts, and missing-mapping cases. Same-brand redirects (e.g. optum.co ↔ optumengage.com) are recognized as intentional and not flagged.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr><td><span class="sev sev-major">major</span></td>
+           <td>empty_anchor_text <span class="meta" style="color:#888;">· 5 instances</span></td>
+           <td>Link with href=&quot;https://www.optumengage.com/&quot; has no visible text. Screen readers will say &quot;link, link&quot; with no context.
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 5 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/rewards/</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/rewards/</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://lumen.com/wellbeing </code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://lumen.com/wellbeing </code></li>
+               </ul>
+             </details>
+           </td></tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td>link_cross_domain_redirect</td>
+  <td>Link redirects to a different domain: https://lumen.com/wellbeing → https://www.optumengage.com/landing/client/wellbeing</td>
 </tr></tbody></table>
+    <details style="margin-top:14px;">
+      <summary style="cursor:pointer;color:#0984e3;font-size:14px;">▸ Show all 8 links that were checked</summary>
+      <table class="findings" style="margin-top:10px;">
+        <thead><tr><th>Anchor text (what users see)</th><th>URL (where it goes)</th><th>HTTP</th><th>Status</th></tr></thead>
+        <tbody><tr>
+            <td>(empty)</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>(empty)</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/rewards/</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>(empty)</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://www.optumengage.com/rewards/</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>(empty)</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://lumen.com/wellbeing <br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/wellbeing</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>(empty)</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://lumen.com/wellbeing <br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/wellbeing</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>optumengage.com</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://optumengage.com<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>Unsubscribe</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">{{unsubscribe}}</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">—</td>
+            <td><span class="sev" style="background:#cce5ff;color:#004085;">ESP token</span></td>
+          </tr><tr>
+            <td>Privacy Policy</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://optumengage.com/privacy<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/privacy</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </details>
+    </div>
+  </details>
 
   <p class="meta">Auto-generated from JSON artifacts.</p>
 </body></html>

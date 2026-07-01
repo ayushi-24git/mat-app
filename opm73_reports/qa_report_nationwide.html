@@ -1,0 +1,287 @@
+<!doctype html>
+<html><head>
+  <meta charset="utf-8">
+  <title>QA Report — _drive_1o9pdps0GKwM</title>
+  <style>
+  body.report { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif; max-width: 1100px; margin: 24px auto; padding: 0 24px; color: #222; line-height: 1.5; }
+  h1 { margin: 0 0 8px 0; font-size: 24px; }
+  h2 { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e5e5e6; font-size: 18px; }
+  h4 { margin: 4px 0; font-size: 13px; color: #555; }
+  .decision-banner { display: inline-block; padding: 10px 18px; border-radius: 6px; font-weight: 700; font-size: 16px; margin: 10px 0 18px 0; }
+  .decision-banner.ready    { background: #d4edda; color: #155724; }
+  .decision-banner.warnings { background: #fff3cd; color: #856404; }
+  .decision-banner.fix      { background: #f8d7da; color: #721c24; }
+  .meta { color: #666; font-size: 13px; }
+  table.findings, table.visual-grid { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  table.findings th, table.findings td { border: 1px solid #e5e5e6; padding: 8px 10px; vertical-align: top; text-align: left; font-size: 13px; }
+  table.findings th { background: #f5f5f5; }
+  .sev { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .sev-critical { background: #f8d7da; color: #721c24; }
+  .sev-major    { background: #fff3cd; color: #856404; }
+  .sev-minor    { background: #e2e3e5; color: #383d41; }
+  table.visual-grid td { vertical-align: top; padding: 6px; width: 33%; }
+  table.visual-grid img { max-width: 100%; height: auto; border: 1px solid #e5e5e6; }
+  .pipeline-issues { background: #fff3cd; padding: 12px 18px; border-left: 4px solid #f0ad4e; margin: 16px 0; }
+  details.section > summary::-webkit-details-marker { display: none; }
+  details.section > summary { outline: none; user-select: none; }
+  details.section[open] > summary .section-toggle { transform: rotate(90deg); }
+  details.section > summary .section-toggle { display: inline-block; transition: transform 0.15s ease; color: #888; font-size: 13px; }
+</style>
+</head><body class="report">
+  <h1>QA Report — WF21219509 Nationwide 2026 My Health Optum Engage reminders (NewHire)</h1>
+  <p class="meta">
+    <strong>Nationwide</strong> · 
+    WF21219509 · 
+    
+    Generated 2026-06-30 13:52:11
+  </p>
+  <p class="decision-banner fix">Decision: MUST FIX</p>
+  <p>
+    <strong>5</strong> critical · <strong>12</strong> major · <strong>11</strong> minor distinct issues
+    
+    &nbsp;|&nbsp;
+    Pixel mismatch: desktop 33.51% · mobile 22.91%
+  </p>
+  <p class="meta">Vision review: 12 section pairs · cost $0.30</p>
+  <!-- Visual comparison images omitted -->
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Visual comparison vs PDF <span class="meta" style="font-size:13px;font-weight:400;">(12 sections compared by Claude)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(16 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">AI compares the rendered HTML against the customer-approved PDF, section by section. Catches subtle differences humans miss: copy mismatches, padding drift, wrong image variants, layout issues.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Where</th><th>Category</th><th>Description + suggested fix</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>desktop · logos_header</td>
+  <td>content_overflow</td>
+  <td>The rendered HTML includes a blue banner section with partial, cut-off text 'Farn big' at the bottom that is entirely absent from the PDF reference. This indicates either a spacing/padding overflow issue or unresolved content bleeding into the section.<br/><em>Fix:</em> Verify section height constraints and padding values match the reference. Check for unresolved template directives or conditional content that may be causing the blue banner to render. Ensure logos_header section boundary is correctly defined to prevent content overflow.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>desktop · headline</td>
+  <td>extra_image_content</td>
+  <td>Rendered version includes hero/background image below headline text (photo of person with colored hair accessory); PDF reference shows headline text only on blue background. Section composition mismatch indicates either extra image in rendered template or incorrect crop boundaries.<br/><em>Fix:</em> Verify headline section template—if image should not be included in this section, remove it. If image is intentional, confirm PDF reference crop captures complete approved section including image.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>desktop · hero</td>
+  <td>color_drift</td>
+  <td>Right-side background color differs significantly between rendered and PDF reference. PDF shows navy blue bar on right edge; rendered version displays much lighter/white background.<br/><em>Fix:</em> Verify hero section background color CSS. Rendered right-side background color appears 15+ ΔE lighter than PDF reference. Check that background-color property matches approved design (navy blue).</td>
+</tr><tr><td><span class="sev sev-critical">critical</span></td>
+           <td><strong>2× section</strong></td>
+           <td>unresolved_template_directive</td>
+           <td>Template conditional `{% if NationwideMyHealth_health_survey == '1' %}` renders literally in body text instead of being resolved by the template engine
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 2 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">desktop · task_1_with_cta</code><div style="font-size:11px;color:#888;margin-top:2px;">fix: Verify template context variables are passed and conditionals are properly resolved before email render</div></li><li><code style="font-size:11px;color:#555;word-break:break-all;">mobile · task_1_with_cta</code><div style="font-size:11px;color:#888;margin-top:2px;">fix: Resolve the Jinja2/template conditional logic—verify the {% else %} block is properly closed and conditions are evaluated before HTML generation</div></li>
+               </ul>
+             </details>
+           </td></tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>desktop · task_1_with_cta</td>
+  <td>element_state</td>
+  <td>Checkbox rendered as filled blue checkmark icon instead of empty outline checkbox as shown in PDF reference<br/><em>Fix:</em> Change checkbox element to match PDF reference style (empty outline, light blue/cyan border)</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>desktop · task_1_with_cta</td>
+  <td>missing_element</td>
+  <td>Missing 'Get started' primary CTA button that appears below descriptive text in PDF reference<br/><em>Fix:</em> Ensure button element is included in rendered output; verify conditional logic is not hiding the CTA</td>
+</tr><tr>
+  <td><span class="sev sev-critical">critical</span></td>
+  <td>desktop · get_app_panel</td>
+  <td>content_mismatch</td>
+  <td>Rendered HTML shows completely different section content than PDF reference. Rendered displays 'Want more details about the Nationwide My Health program?' section with resource guide link, while PDF displays 'Get the new app' section with Optum Engage app CTA and button. The entire section content is mismatched, indicating wrong template section or content injection failure.<br/><em>Fix:</em> Verify that the rendered template is pulling the correct section content for 'get_app_panel'. Check template variable bindings and confirm the correct section data is being mapped to this section ID in the render pipeline.</td>
+</tr><tr><td><span class="sev sev-major">major</span></td>
+           <td><strong>3× section</strong></td>
+           <td>missing_elements</td>
+           <td>Footer navigation links (Preference Center | Unsubscribe | Privacy Policy) are present in PDF reference but completely missing from rendered HTML footer.
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 3 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">desktop · footer</code><div style="font-size:11px;color:#888;margin-top:2px;">fix: Verify that footer link section template is included in rendered output and not conditionally hidden or unresolved.</div></li><li><code style="font-size:11px;color:#555;word-break:break-all;">desktop · footer</code><div style="font-size:11px;color:#888;margin-top:2px;">fix: Verify that address block is rendering and not conditionally hidden or wrapped in an unresolved template variable.</div></li><li><code style="font-size:11px;color:#555;word-break:break-all;">desktop · footer</code><div style="font-size:11px;color:#888;margin-top:2px;">fix: Check if document ID is being rendered or if it should be included in the footer template.</div></li>
+               </ul>
+             </details>
+           </td></tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>mobile · logos_header</td>
+  <td>image_sizing</td>
+  <td>Nationwide logo is significantly larger in rendered HTML (~100px+) compared to PDF reference (~60-70px). The logo oversizes the header section proportions.<br/><em>Fix:</em> Verify Nationwide logo dimensions or max-width/max-height CSS constraints match the approved PDF reference. Check if correct image asset/variant is being used.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>mobile · headline</td>
+  <td>section_layout</td>
+  <td>Rendered HTML includes partial image element at bottom (colorful product/lifestyle image visible) that does not appear in PDF reference. Section content scope differs between rendered and reference.<br/><em>Fix:</em> Verify section crop boundaries and content inclusion match PDF reference. Confirm whether image element should be part of headline section or if rendering is pulling in adjacent content due to layout/height issue.</td>
+</tr><tr>
+  <td><span class="sev sev-critical">critical</span></td>
+  <td>mobile · task_1_with_cta</td>
+  <td>content_duplication</td>
+  <td>Content is duplicated and incorrectly ordered. Rendered shows 'Engage. It only takes...' text, then '{{% else %}}', then 'Complete your Health Survey...' text repeated. PDF shows only one clean instance in correct order<br/><em>Fix:</em> Debug the conditional rendering logic—ensure only one branch of the if/else executes and content is not rendered twice due to unresolved conditionals</td>
+</tr><tr>
+  <td><span class="sev sev-critical">critical</span></td>
+  <td>mobile · get_app_panel</td>
+  <td>section_content</td>
+  <td>Rendered HTML crop displays incorrect section content. Expected 'Get the new app' section with 'Access the app' CTA button (as shown in PDF reference), but rendered output shows 'Want more details about the Nationwide My Health program?' section with resource guide link instead. Section appears to be rendering previous/wrong content block.<br/><em>Fix:</em> Verify the get_app_panel section template is correctly assigned in the render pipeline; check for template include/block ordering issue or conditional logic that may be suppressing the correct section and showing stale content.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>mobile · footer</td>
+  <td>content_mismatch</td>
+  <td>Rendered HTML footer contains significantly different content layout than PDF reference. Rendered version displays promotional section (&quot;Health program&quot;, &quot;Access the app&quot; CTA button, &quot;Questions?&quot; heading with phone number) above Optum branding, which is absent from PDF reference. PDF reference shows body text content directly above Optum branding.<br/><em>Fix:</em> Verify footer crop vertical boundaries are aligned correctly and confirm HTML template is rendering intended footer content without promotional elements from other sections injected into footer area.</td>
+</tr></tbody></table>
+    </div>
+  </details>
+
+  
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Style &amp; accessibility audit
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(7 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Static checks: brand palette adherence, font stack, image alt-text (for screen readers + Gmail image-blocking fallback), and HTML byte size (Gmail clips emails over 102 KB).</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>off_palette_color</td>
+  <td>Color #e5e5e6 is not in the design-tokens palette and not close to any approved color (nearest #f5f5f5 neutral_bg_gray, RGB distance 27.1).</td>
+</tr><tr><td><span class="sev sev-minor">minor</span></td>
+           <td>color_drift <span class="meta" style="color:#888;">· 5 instances</span></td>
+           <td>Color #4b4d4f not in palette but close to #444444 (text_body); RGB distance 15.8.
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 5 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">(instance)</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">(instance)</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">(instance)</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">(instance)</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">(instance)</code></li>
+               </ul>
+             </details>
+           </td></tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td>unknown_token</td>
+  <td>Token {{view_in_browser}} not in ESP allowlist or known placeholder schemes (IMAGE: / LINK:). Possible typo or unregistered personalization token.</td>
+</tr></tbody></table>
+    </div>
+  </details>
+
+  
+  <details open class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Email client compatibility <span class="meta" style="font-size:13px;font-weight:400;">(31 rules across Outlook Classic, Gmail web/iOS/Android, Outlook New / 365)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(4 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Static analysis that catches rendering issues marketers can't visually verify — things that look fine in your browser but break inside Outlook's Word HTML engine or Gmail's mobile clipper. Each finding tells the dev exactly what to fix.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Word renders sharp corners regardless of `border-radius`. Visible on buttons, panels, badges.</td>
+</tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Without `mso-line-height-rule: exactly`, Word may add extra space between lines, especially when mixing different line-heights.</td>
+</tr><tr>
+  <td><span class="sev sev-major">major</span></td>
+  <td></td>
+  <td>Word adds default cellpadding/spacing if not zeroed. Spacing creeps in between cells.</td>
+</tr><tr>
+  <td><span class="sev sev-minor">minor</span></td>
+  <td></td>
+  <td>Without `&lt;meta name=&quot;color-scheme&quot; content=&quot;light&quot;&gt;` (or `light dark`), Outlook New may apply automatic dark-mode color inversion in unexpected ways.</td>
+</tr></tbody></table>
+    </div>
+  </details>
+
+  
+  <details  class="section">
+    <summary style="cursor:pointer;list-style:none;padding:14px 0;border-top:1px solid #e5e5e6;margin-top:18px;">
+      <span style="font-size:18px;font-weight:700;display:inline-flex;align-items:center;gap:8px;">
+        <span class="section-toggle">▶</span>
+        Link QA <span class="meta" style="font-size:13px;font-weight:400;">(11 links analysed, including live HTTP probe)</span>
+        <span style="font-size:13px;font-weight:400;color:#666;margin-left:8px;">(2 findings)</span>
+      </span>
+    </summary>
+    <div style="padding:6px 0 18px 26px;">
+      <p class="meta">Every clickable link is extracted, validated against your link mapping (from <code>links.docx</code>), and probed live via HTTP HEAD to verify the page resolves. Catches wrong URLs, broken hrefs, empty anchor text, 404s, timeouts, and missing-mapping cases. Same-brand redirects (e.g. optum.co ↔ optumengage.com) are recognized as intentional and not flagged.</p>
+      <table class="findings"><thead><tr><th>Severity</th><th>Category</th><th>Message</th></tr></thead><tbody><tr><td><span class="sev sev-minor">minor</span></td>
+           <td>link_cross_domain_redirect <span class="meta" style="color:#888;">· 2 instances</span></td>
+           <td>Link redirects to a different domain: https://nationwidemyhealth.com → https://www.optumengage.com/landing/client/nationwide
+             <details style="margin-top:6px;">
+               <summary style="cursor:pointer;color:#0984e3;font-size:12px;">▸ Show all 2 instances</summary>
+               <ul style="margin:6px 0 0 18px;font-size:12px;color:#555;list-style:disc;">
+                 <li><code style="font-size:11px;color:#555;word-break:break-all;">https://nationwidemyhealth.com</code></li><li><code style="font-size:11px;color:#555;word-break:break-all;">https://optum.co/myhealth</code></li>
+               </ul>
+             </details>
+           </td></tr></tbody></table>
+    <details style="margin-top:14px;">
+      <summary style="cursor:pointer;color:#0984e3;font-size:14px;">▸ Show all 11 links that were checked</summary>
+      <table class="findings" style="margin-top:10px;">
+        <thead><tr><th>Anchor text (what users see)</th><th>URL (where it goes)</th><th>HTTP</th><th>Status</th></tr></thead>
+        <tbody><tr>
+            <td>Nationwide</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">#</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">—</td>
+            <td><span class="sev" style="background:#e2e3e5;color:#383d41;">placeholder</span></td>
+          </tr><tr>
+            <td>nationwidemyhealth.com</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://nationwidemyhealth.com<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/nationwide</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>Download the app</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://nationwidemyhealth.com<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/nationwide</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>nationwidemyhealth.com</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://nationwidemyhealth.com<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/nationwide</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>Download the app</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://nationwidemyhealth.com<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/landing/client/nationwide</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>My Health resource guide</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://cdn.optum.com/contentopsmedia/nationwide-myhealth-digital-guide/index.html<br/><span style="color:#888;font-size:10px;">→ https://assets.optum.com/content/dam/optum/optum-health-marketing/optum/26B2C/nationwide-myhealth-digital-guide/index.html</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>Download the Optum Engage app</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://optum.co/myhealth<br/><span style="color:#888;font-size:10px;">→ https://apps.apple.com/us/app/optum-engage/id6739583340</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>888-688-4030</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">tel:888-688-4030</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">—</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">tel link</span></td>
+          </tr><tr>
+            <td>Preference Center</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://optumengage.com/settings/mp<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/settings/mp</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr><tr>
+            <td>Unsubscribe</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">{{unsubscribe}}</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">—</td>
+            <td><span class="sev" style="background:#cce5ff;color:#004085;">ESP token</span></td>
+          </tr><tr>
+            <td>Privacy Policy</td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;">https://optumengage.com/privacy<br/><span style="color:#888;font-size:10px;">→ https://www.optumengage.com/privacy</span></td>
+            <td style="font-family:Menlo,Consolas,monospace;font-size:11px;text-align:center;">200 →</td>
+            <td><span class="sev" style="background:#d4edda;color:#155724;">✓ valid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </details>
+    </div>
+  </details>
+
+  <p class="meta">Auto-generated from JSON artifacts.</p>
+</body></html>
